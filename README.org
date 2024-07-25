@@ -1,0 +1,48 @@
+#+options: ':nil *:t -:t ::t <:t H:3 \n:nil ^:{} arch:headline author:t
+#+options: broken-links:nil c:nil creator:nil d:(not "LOGBOOK") date:t e:t
+#+options: email:nil f:t inline:t num:t p:nil pri:nil prop:nil stat:t tags:t
+#+options: tasks:t tex:t timestamp:t title:t toc:t todo:t |:t
+#+title: README
+#+date: <2024-07-25 Thu>
+#+author: Jack M
+#+language: en
+#+select_tags: export
+#+exclude_tags: noexport
+#+creator: Emacs 29.3 (Org mode 9.6.15)
+#+cite_export:
+
+Included here are configuration files to work with the [[https://gpd.hk/gpdpocket3][GPD Pocket 3]] 
+* useful links
+:PROPERTIES:
+:CREATED:  [2024-07-25 Thu 09:27]
+:END:
+https://wiki.archlinux.org/title/GPD_Pocket_3
+* goals
+
+** Hardware
+
+*** change base display configuration
+thanks (1)
+Add the following kernel parameters (for kubuntu, edit /etc/default/grub and then run ~sudo update-grub~)
+#+begin_src 
+GRUB_CMDLINE_LINUX="fbcon=rotate:1 video=DSI-1:panel_orientation=right_side_up"
+#+end_src
+Also trying to set grub_gfxmode as per https://old.reddit.com/r/GPDPocket/comments/syxg9i/grub_menu_rotation/
+
+
+
+- we would like to improve how the display is handled, specifically when switching between the internal hardware
+*** improve how the touchpad is handled
+touchpad's usb ID 258a:000c
+
+*** change display and kbd/mouse settings when using external peripherals
+**** Trigger
+  1. there is an external display connected
+  2. the lid is closed
+  3. there is an external mouse connected
+**** Behavior
+
+
+* References
+This will be the first time running an in-file set of references, so not exactly sure best way to handle
+1. https://wiki.archlinux.org/title/GPD_Pocket_3
