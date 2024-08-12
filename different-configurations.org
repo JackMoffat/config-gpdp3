@@ -83,3 +83,46 @@
        sleep 5
    done
    #+END_SRC
+
+** TODO Running the Monitoring Script at Startup
+   To ensure the monitoring script runs at startup, you can either use a systemd service or a cron job.
+
+*** TODO Using systemd
+    Create a systemd service file to run the monitoring script at startup.
+NOTE: as such this shouldn't work, it would be better to create a symlink to this file once it is there or something?
+    #+BEGIN_SRC ini :tangle /etc/systemd/system/display-monitor.service
+    [Unit]
+    Description=Display Monitor Service
+
+    [Service]
+    ExecStart=/path/to/monitor_display.sh
+    Restart=always
+
+    [Install]
+    WantedBy=multi-user.target
+    #+END_SRC
+
+    Replace `/path/to/monitor_display.sh` with the actual path to your `monitor_display.sh` script.
+
+    Enable and start the service:
+    #+BEGIN_SRC sh
+    sudo systemctl enable display-monitor.service
+    sudo systemctl start display-monitor.service
+    #+END_SRC
+
+*** TODO Using cron
+    Alternatively, you can add the monitoring script to your crontab with the `@reboot` directive.
+
+    Open your crontab:
+    #+BEGIN_SRC sh
+    crontab -e
+    #+END_SRC
+
+    Add the following line:
+    #+BEGIN_SRC conf
+    @reboot /path/to/monitor_display.sh
+    #+END_SRC
+
+    Again, replace `/path/to/monitor_display.sh` with the actual path to your script.
+
+    This ensures that the monitoring script starts each time you boot your system.
