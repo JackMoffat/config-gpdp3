@@ -1,0 +1,85 @@
+#+PROPERTY: header-args :results silent :eval no
+* Display Configuration and Switching Scripts
+  This document contains the configuration file and scripts for automatically switching display settings between internal and external displays on a Kubuntu system.
+
+** Configuration File: display_config.conf
+   The configuration file stores the display and input settings for both internal and external displays.
+
+   #+BEGIN_SRC conf :tangle display_config.conf
+   [internal_display]
+   output=DSI-1
+   resolution=1920x1080
+   scale=1.75x1.75
+   dpi=96
+   rotate=normal
+   mouse_map=3 2 1
+
+   [external_display]
+   output=HDMI-1
+   resolution=1920x1080
+   scale=1.0x1.0
+   dpi=96
+   rotate=left
+   mouse_map=1 2 3
+   #+END_SRC
+
+** Combined Display Switching Script: switch_display.sh
+   This script checks if an external display is connected. If it is, it applies the external display settings and disables the internal display. If not, it applies the internal display settings.
+
+   #+BEGIN_SRC bash :tangle switch_display.sh
+   #!/bin/bash
+
+   CONFIG_FILE="display_config.conf"
+
+   get_config_value() {
+       awk -F '=' -v section="$1" -v key="$2" '
+       $0 ~ "\\["section"\\]" {in_section=1; next}
+       $0 ~ "\\[" {in_section=0}
+       in_section && $1==key {print $2; exit}
+       ' "$CONFIG_FILE"
+   }
+
+   apply_config() {
+       output=$(get_config_value "$1" "output")
+       resolution=$(get_config_value "$1" "resolution")
+       scale=$(get_config_value "$1" "scale")
+       dpi=$(get_config_value "$1" "dpi")
+       rotate=$(get_config_value "$1" "rotate")
+       mouse_map=$(get_config_value "$1" "mouse_map")
+
+       xrandr --output "$output" --mode "$resolution" --scale "$scale" --dpi "$dpi" --rotate "$rotate"
+       xinput set-button-map "pointer:DeviceName" $mouse_map
+   }
+
+   if xrandr | grep "HDMI-1 connected"; then
+       internal_output=$(get_config_value "internal_display" "output")
+       xrandr --output "$internal_output" --off
+       apply_config "external_display"
+   else
+       apply_config "internal_display"
+   fi
+   #+END_SRC
+
+** Monitoring Script: monitor_display.sh
+   This script continuously monitors the connection status of the external display and switches configurations accordingly by calling the combined script.
+
+   #+BEGIN_SRC bash :tangle monitor_display.sh
+   #!/bin/bash
+
+   while true; do
+       if xrandr | grep "HDMI-1 connected"; then
+           if [ ! -f /tmp/external_display ]; then
+               ./switch_display.sh
+               touch /tmp/external_display
+               rm -f /tmp/internal_display
+           fi
+       else
+           if [ ! -f /tmp/internal_display ]; then
+               ./switch_display.sh
+               touch /tmp/internal_display
+               rm -f /tmp/external_display
+           fi
+       fi
+       sleep 5
+   done
+   #+END_SRC

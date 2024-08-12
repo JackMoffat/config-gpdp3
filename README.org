@@ -28,7 +28,7 @@ Add the following kernel parameters (for kubuntu, edit /etc/default/grub and the
 GRUB_CMDLINE_LINUX="fbcon=rotate:1 video=DSI-1:panel_orientation=right_side_up"
 #+end_src
 Also trying to set grub_gfxmode as per https://old.reddit.com/r/GPDPocket/comments/syxg9i/grub_menu_rotation/
-
+**** change grub
 
 
 - we would like to improve how the display is handled, specifically when switching between the internal hardware
