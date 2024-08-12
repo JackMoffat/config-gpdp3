@@ -17,6 +17,12 @@ Included here are configuration files to work with the [[https://gpd.hk/gpdpocke
 :CREATED:  [2024-07-25 Thu 09:27]
 :END:
 https://wiki.archlinux.org/title/GPD_Pocket_3
+** customizing firefox more
+*** link I had been following
+https://askubuntu.com/questions/1355169/how-to-reduce-height-of-bars-in-firefox
+*** here for a slimmer bars on firefox display
+https://github.com/Zyox-zSys/SlimBarsFirefox
+
 * goals
 
 ** Hardware
