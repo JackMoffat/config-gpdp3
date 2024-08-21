@@ -1,30 +1,33 @@
 #+PROPERTY: header-args :results silent :eval no
 * Display Configuration and Switching Scripts
   This document contains the configuration file and scripts for automatically switching display settings between internal and external displays on a Kubuntu system.
-
 ** Configuration File: display_config.conf
-   The configuration file stores the display and input settings for both internal and external displays.
+   The configuration file stores the display, input, icon size, and cursor size settings for both internal and external displays.
 
    #+BEGIN_SRC conf :tangle display_config.conf
    [internal_display]
    output=DSI-1
    resolution=1920x1080
-   scale=1.75x1.75
+   scale=1x1
    dpi=96
    rotate=normal
    mouse_map=3 2 1
+   icon_size=32
+   cursor_size=32
 
    [external_display]
    output=HDMI-1
    resolution=1920x1080
-   scale=1.0x1.0
+   scale=1x1
    dpi=96
    rotate=left
    mouse_map=1 2 3
+   icon_size=32
+   cursor_size=24
    #+END_SRC
 
 ** Combined Display Switching Script: switch_display.sh
-   This script checks if an external display is connected. If it is, it applies the external display settings and disables the internal display. If not, it applies the internal display settings.
+   This script checks if an external display is connected. If it is, it applies the external display settings and disables the internal display. If not, it applies the internal display settings. It also adjusts icon and cursor sizes accordingly.
 
    #+BEGIN_SRC bash :tangle switch_display.sh
    #!/bin/bash
@@ -46,9 +49,14 @@
        dpi=$(get_config_value "$1" "dpi")
        rotate=$(get_config_value "$1" "rotate")
        mouse_map=$(get_config_value "$1" "mouse_map")
+       icon_size=$(get_config_value "$1" "icon_size")
+       cursor_size=$(get_config_value "$1" "cursor_size")
 
        xrandr --output "$output" --mode "$resolution" --scale "$scale" --dpi "$dpi" --rotate "$rotate"
        xinput set-button-map "pointer:DeviceName" $mouse_map
+       gsettings set org.gnome.desktop.interface icon-theme "Adwaita" # Adjust this line to match your icon theme if needed
+       gsettings set org.gnome.desktop.interface icon-size "$icon_size"
+       gsettings set org.gnome.desktop.interface cursor-size "$cursor_size"
    }
 
    if xrandr | grep "HDMI-1 connected"; then
@@ -84,12 +92,12 @@
    done
    #+END_SRC
 
-** TODO Running the Monitoring Script at Startup
+** Running the Monitoring Script at Startup
    To ensure the monitoring script runs at startup, you can either use a systemd service or a cron job.
 
-*** TODO Using systemd
+*** Using systemd
     Create a systemd service file to run the monitoring script at startup.
-NOTE: as such this shouldn't work, it would be better to create a symlink to this file once it is there or something?
+
     #+BEGIN_SRC ini :tangle /etc/systemd/system/display-monitor.service
     [Unit]
     Description=Display Monitor Service
@@ -110,7 +118,7 @@ NOTE: as such this shouldn't work, it would be better to create a symlink to thi
     sudo systemctl start display-monitor.service
     #+END_SRC
 
-*** TODO Using cron
+*** Using cron
     Alternatively, you can add the monitoring script to your crontab with the `@reboot` directive.
 
     Open your crontab:
@@ -126,3 +134,4 @@ NOTE: as such this shouldn't work, it would be better to create a symlink to thi
     Again, replace `/path/to/monitor_display.sh` with the actual path to your script.
 
     This ensures that the monitoring script starts each time you boot your system.
+    
