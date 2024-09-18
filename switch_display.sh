@@ -29,3 +29,10 @@ if xrandr | grep "HDMI-1 connected"; then
 else
     apply_config "internal_display"
 fi
+
+flip() {
+    output=$(get_config_value "$1" "output")
+    rotate=$(get_config_value "$1" "rotate")
+
+    xrandr --output "$output" --rotate "$rotate"
+}
